@@ -1,0 +1,6 @@
+__pycache__/main.cpython-38.pyc
+api/v1/__pycache__/__init__.cpython-38.pyc
+api/v1/__pycache__/api.cpython-38.pyc
+api/v1/endpoints/__pycache__/__init__.cpython-38.pyc
+api/v1/endpoints/__pycache__/dron.cpython-38.pyc
+schemas/__pycache__/dron.cpython-38.pyc

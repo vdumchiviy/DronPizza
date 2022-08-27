@@ -1,8 +1,11 @@
 from fastapi import FastAPI
+from api.v1.api import api_router
 
-app = FastAPI()
+appdron = FastAPI()
+appdron.include_router(api_router, prefix="/api/v1")
 
+appmain = FastAPI()
 
-@app.get('/')
+@appmain.get('/')
 def home_page():
     return {"message": "It works!"}
