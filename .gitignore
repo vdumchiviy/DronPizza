@@ -9,3 +9,8 @@ api/v1/endpoints/__pycache__/pizzabase.cpython-38.pyc
 schemas/__pycache__/pizzabase.cpython-38.pyc
 utils/__pycache__/file_utils.cpython-38.pyc
 utils/__pycache__/settings.cpython-38.pyc
+tests/schemas/__pycache__/__init__.cpython-38.pyc
+tests/schemas/__pycache__/test_dron.cpython-38-pytest-7.1.2.pyc
+tests/schemas/__pycache__/test_pizzabase.cpython-38-pytest-7.1.2.pyc
+.gitignore
+tests/__pycache__/__init__.cpython-38.pyc
