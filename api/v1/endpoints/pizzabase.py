@@ -22,9 +22,8 @@ def create_pizzabases(
     return {"message": pizzabase.dict()}
 
 
-@router.get(path="/pizzabases/{pk}/task/", tags=["PizzaBase"], response_model=Union[PizzaTask, Dict[str, Any]])
+@router.get(path="/pizzabases/newtask/", tags=["PizzaBase"], response_model=Union[PizzaTask, Dict[str, Any]])
 def get_new_task(
-    pk: int
 ) -> Union[PizzaTask, Dict[str, Any]]:
     pizza_tasks: Optional[PizzaTask] = file_utils.get_new_task_from_csv()
     try:
