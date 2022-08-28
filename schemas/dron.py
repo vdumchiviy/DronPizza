@@ -5,7 +5,7 @@ from pydantic import BaseModel, Field
 class Dron(BaseModel):
     pk: int = Field(gte=0, lte=0, default=0)
     name: Optional[str]
-    coordinates: Optional[Dict[str, Any]]
+    coordinates: Optional[Dict[str, Any]] = {"x": 0, "y": 0}
     fuel: Optional[int] = 20
 
 
