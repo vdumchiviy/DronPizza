@@ -1,7 +1,10 @@
 from utils import file_utils
 from typing import Any, Dict, List, Optional, Union
-from fastapi import APIRouter
+from fastapi import APIRouter, Request
 from schemas.pizzabase import PizzaBase, PizzaTask
+import httpx
+from utils.settings import DRON_URL
+
 
 router = APIRouter()
 
@@ -12,14 +15,14 @@ def get_pizzabases(
     return [PizzaBase]
 
 
-@router.post(path="/pizzabases", tags="PizzaBase", response_model=PizzaBase)
+@router.post(path="/pizzabases", tags=["PizzaBase"], response_model=PizzaBase)
 def create_pizzabases(
 ) -> PizzaBase:
     pizzabase = PizzaBase()
     return {"message": pizzabase.dict()}
 
 
-@router.get(path="/pizzabases/{pk}/task/", response_model=Union[PizzaTask, Dict[str, Any]])
+@router.get(path="/pizzabases/{pk}/task/", tags=["PizzaBase"], response_model=Union[PizzaTask, Dict[str, Any]])
 def get_new_task(
     pk: int
 ) -> Union[PizzaTask, Dict[str, Any]]:
@@ -29,3 +32,17 @@ def get_new_task(
     except StopIteration:
         return {"code": 404, "message": "There is no more tasks"}
     return pizza_task
+
+
+@router.get(
+    path="/pizzabases/drons/coordinates/",
+    tags=["PizzaBase", "Drons"],
+    response_model=Dict[str, Any])
+def get_drons_coordinate(
+    request: Request
+) -> Dict[str, Any]:
+    with httpx.Client() as client:
+        response = client.get(DRON_URL + "/drons/coordinates/")
+
+    print(response)
+    return dict()
