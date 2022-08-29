@@ -31,6 +31,20 @@
             ],
             "jinja": true,
             "justMyCode": true
-        }
+        },
+        {
+            "name": "Python: FastAPI Auth",
+            "type": "python",
+            "request": "launch",
+            "module": "uvicorn",
+            "args": [
+                "main_auth:app_auth",
+                "--reload",
+                "--port",
+                "8008"
+            ],
+            "jinja": true,
+            "justMyCode": true
+        }        
     ]
 }
