@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any, Dict, List, Tuple, Union
 from fastapi import APIRouter
 from schemas.dron import Dron, DronOut
 from schemas.pizzabase import PizzaTask
@@ -33,6 +33,31 @@ def create_dron(
     fuel: int = 20
 ) -> DronOut:
     settings.dron = Dron(name=name, fuel=fuel)
+    settings.dron_data = {"login": name, "password": name + "12345"}
+    with httpx.Client() as client:
+        # Signing in
+        response = client.post(
+            url=settings.AUTH_URL + "/userdrons/signin",
+            json=settings.dron_data,
+            timeout=120
+        )
+        if response.status_code != 200:
+            raise ValueError("Dron didn't authorized")
+        resp = response.json()
+        settings.dron_data["hashed_password"] = resp["hashed_password"]
+
+        # Logging in
+        response = client.post(
+            url=settings.AUTH_URL + "/userdrons/login",
+            json=settings.dron_data,
+            timeout=120
+        )
+        if response.status_code != 200:
+            raise ValueError("Dron didn't logged in")
+        resp = response.json()
+        settings.dron_data["access_token"] = resp["access_token"]
+        settings.dron_data["refresh_token"] = resp["refresh_token"]
+
     print(settings.dron)
 
     result = DronOut(**settings.dron.dict())
@@ -50,7 +75,7 @@ def get_drone(
         return {"code": 404, "message": f"Dron with name {name} not found"}
 
 
-@router.get(path="/drons/coordinates/", tags=["dron"])
+@router.get(path="/drons/coordinates", tags=["dron"])
 def get_drone_coordinates() -> Union[Tuple[int, int], Dict[str, Any]]:
     if settings.dron is None:
         return {"code": 404, "message": f"Dron not found"}
@@ -62,11 +87,42 @@ def get_drone_coordinates() -> Union[Tuple[int, int], Dict[str, Any]]:
 def get_new_task_from_pizzabase() -> Dict[str, Any]:
     if settings.dron is None:
         return {"code": 400, "message": "There is no dron"}
+    headers = {'Authorization': 'Bearer {0}'.format(
+        settings.dron_data["access_token"])}
+
     with httpx.Client() as client:
-        response = client.get(settings.PIZZABASE_URL + "/pizzabases/newtask/")
+        response = client.get(
+            url=settings.PIZZABASE_URL + "/pizzabases/newtask",
+            headers=headers,
+            timeout=120)
         dat = response.json()
-        if response.status_code != 200 and dat.get("code") is None:
+        if response.status_code != 200:
             return {"code": response.status_code, "message": dat}
+
+        if dat.get("message") == "Token expired":
+            # refresh access token and get new task again
+            headers = {'Authorization': 'Bearer {0}'.format(
+                settings.dron_data["refresh_token"])}
+            response = client.get(
+                url=settings.AUTH_URL + "/userdrons/refresh_token",
+                headers=headers,
+                timeout=120)
+            dat = response.json()
+            if response.status_code != 200:
+                return {"code": response.status_code, "message": dat}
+            if dat.get("access_token") is not None:
+                settings.dron_data["access_token"] = dat["access_token"]
+
+            headers = {'Authorization': 'Bearer {0}'.format(
+                settings.dron_data["access_token"])}
+            response = client.get(
+                url=settings.PIZZABASE_URL + "/pizzabases/newtask",
+                headers=headers,
+                timeout=120)
+            dat = response.json()
+            if response.status_code != 200:
+                return {"code": response.status_code, "message": dat}
+
         if dat.get("message") == "There is no more tasks":
             # flying to the PizzaBase
             settings.dron.next_coordinates = (0, 0)
