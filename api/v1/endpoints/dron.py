@@ -30,7 +30,7 @@ def get_drons(
 @router.post(path="/drons", tags=["dron"], response_model=DronOut)
 def create_dron(
     name: str = "0",
-    fuel: int = 20
+    fuel: int = 25
 ) -> DronOut:
     settings.dron = Dron(name=name, fuel=fuel)
     settings.dron_data = {"login": name, "password": name + "12345"}
@@ -140,7 +140,7 @@ def get_new_task_from_pizzabase() -> Dict[str, Any]:
         settings.dron.coordinates = (0, 0)
 
         # refueling
-        settings.dron.fuel = 20
+        settings.dron.fuel = 25
 
         # defying new coordinates
         define_next_coordinate(settings.dron, settings.task)
