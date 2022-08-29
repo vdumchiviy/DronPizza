@@ -7,7 +7,7 @@
 ##### 1. Designing microservice architecture
 ##### 2. Decomposition
 ##### 3. Prototype without authorization and async
-#### **4. Prototype with authorization**
+#### **4. Prototype with authorization** (current step)
 ##### 5. Full tests coverage
 ##### 6. Pre-prod (add real world to app)
 ##### 7. Prod
@@ -107,11 +107,11 @@ websockets==10.3
 ## Run
 According to utils/config.py there are ip's assigned to microservices:
 
-| Microservice | IP |
-| ------ | ----------- |
-| Auth | http://127.0.0.1:**8008**/api/v1 |
-| PizzaBase | http://127.0.0.1:**8000**/api/v1 |
-| Dron | http://127.0.0.1:**8001**/api/v1 |
+| Microservice | IP                               |
+| ------------ | -------------------------------- |
+| Auth         | http://127.0.0.1:**8008**/api/v1 |
+| PizzaBase    | http://127.0.0.1:**8000**/api/v1 |
+| Dron         | http://127.0.0.1:**8001**/api/v1 |
 
 ## License
 **Free Software**
