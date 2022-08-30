@@ -34,10 +34,12 @@ You are welcome to implement any additional functionality you think is important
 ## Tech:
 - Python 3.8.10
 - FastAPI
-- Pydantic
-- Pytest + httpx
 - PyJWT + passlib
 - csv
+- Pytest + httpx
+- Pydantic
+- flake8
+- mypy
 
 ## Features
 There are 3 microservices: 
@@ -67,6 +69,7 @@ cryptography==37.0.4
 dnspython==2.2.1
 email-validator==1.2.1
 fastapi==0.80.0
+flake8==5.0.4
 greenlet==1.1.3
 h11==0.12.0
 httpcore==0.15.0
@@ -77,13 +80,18 @@ iniconfig==1.1.1
 itsdangerous==2.1.2
 Jinja2==3.1.2
 MarkupSafe==2.1.1
+mccabe==0.7.0
+mypy==0.971
+mypy-extensions==0.4.3
 orjson==3.8.0
 packaging==21.3
 passlib==1.7.4
 pluggy==1.0.0
 py==1.11.0
+pycodestyle==2.9.1
 pycparser==2.21
 pydantic==1.9.2
+pyflakes==2.5.0
 PyJWT==2.4.0
 pyparsing==3.0.9
 pytest==7.1.2
