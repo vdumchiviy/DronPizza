@@ -1,20 +1,21 @@
-name: Code checks
+name: CodeChecks
 
 on:
   push:
-    branches: [develop]
+    branches: [ develop ]
   pull_request:
-    branches: [develop]
+    branches: [ develop ]
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout repository
+        uses: actions/checkout@v3
       - name: Install python
-        uses: setup-python@v2
+        uses: setup-python@v4
         with:
-        python-version: 3.8.10
+          python-version: 3.8.10
       - name: Install deps
         run: |
           python -m pip install --upgrade pip
