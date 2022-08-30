@@ -6,7 +6,7 @@ from main_auth import app_auth
 
 @pytest.mark.auth
 @pytest.mark.skip(reason="TODO: clear db")
-def test_dron_signin():
+def test_dron_signin() -> None:
     with TestClient(app=app_auth) as client:
         data = {"login": "testdron", "password": "123"}
         response = client.post(url="/api/v1/userdrons/signin", json=data)
@@ -17,7 +17,7 @@ def test_dron_signin():
 
 
 @pytest.mark.auth
-def test_dron_login():
+def test_dron_login() -> None:
     with TestClient(app=app_auth) as client:
         data = {"login": "testdron", "password": "123"}
         response = client.post(url="/api/v1/userdrons/signin", json=data)

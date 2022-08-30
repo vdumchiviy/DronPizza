@@ -8,14 +8,15 @@ import httpx
 router = APIRouter()
 
 
-def define_next_coordinate(dron: Dron, task: PizzaTask):
+def define_next_coordinate(dron: Dron, task: PizzaTask) -> None:
     # assume that distance to next point the same as
     # a distance to base from next point
-    if dron.fuel < task.fuel_destination * 2:
-        dron.next_coordinates = (0, 0)
-    else:
-        dron.next_coordinates = (-1, -1)
-        dron.distance_to_base = task.fuel_destination
+    if dron.fuel is not None:
+        if dron.fuel < task.fuel_destination * 2:
+            dron.next_coordinates = (0, 0)
+        else:
+            dron.next_coordinates = (-1, -1)
+            dron.distance_to_base = task.fuel_destination
 
 
 @router.get(path="/drons", tags=["dron"])
@@ -78,17 +79,19 @@ def get_drone(
 @router.get(path="/drons/coordinates", tags=["dron"])
 def get_drone_coordinates() -> Union[Tuple[int, int], Dict[str, Any]]:
     if settings.dron is None:
-        return {"code": 404, "message": f"Dron not found"}
+        result = {"code": 404, "message": "Dron not found"}
+        return result
 
     return settings.dron.coordinates
 
 
 @router.get(path="/drons/pizzabases/newtask", tags=["dron", "PizzaBase"])
 def get_new_task_from_pizzabase() -> Dict[str, Any]:
-    if settings.dron is None:
+    if settings.dron_data is not None:
+        headers = {'Authorization': 'Bearer {0}'.format(
+            settings.dron_data["access_token"])}
+    else:
         return {"code": 400, "message": "There is no dron"}
-    headers = {'Authorization': 'Bearer {0}'.format(
-        settings.dron_data["access_token"])}
 
     with httpx.Client() as client:
         response = client.get(
@@ -126,17 +129,19 @@ def get_new_task_from_pizzabase() -> Dict[str, Any]:
         if dat.get("message") == "There is no more tasks":
             # flying to the PizzaBase
             settings.dron.next_coordinates = (0, 0)
-            settings.dron.fuel -= settings.dron.distance_to_base
+            if settings.dron.fuel is not None:
+                settings.dron.fuel -= settings.dron.distance_to_base
             settings.dron.coordinates = (0, 0)
             settings.dron.distance_to_base = 0
-            return {"code": 200, "message": f"Oreders finished"}
+            return {"code": 200, "message": "Oreders finished"}
 
         settings.task = PizzaTask(**dat)
 
     define_next_coordinate(settings.dron, settings.task)
     if settings.dron.next_coordinates == (0, 0):
         # flying to the PizzaBase
-        settings.dron.fuel -= settings.dron.distance_to_base
+        if settings.dron.fuel is not None:
+            settings.dron.fuel -= settings.dron.distance_to_base
         settings.dron.coordinates = (0, 0)
 
         # refueling
@@ -146,7 +151,8 @@ def get_new_task_from_pizzabase() -> Dict[str, Any]:
         define_next_coordinate(settings.dron, settings.task)
 
     # flying to the point
-    settings.dron.fuel -= settings.task.fuel_destination
+    if settings.dron.fuel is not None:
+        settings.dron.fuel -= settings.task.fuel_destination
     result = {"code": 200,
               "message": f"Oreder {settings.task.order_id} has been completed"}
 

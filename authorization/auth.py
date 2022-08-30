@@ -1,4 +1,4 @@
-# from jwt.jwt import JWT
+from typing import Any, Dict, Union
 from jwt.api_jwt import PyJWT
 from jwt.exceptions import ExpiredSignatureError
 
@@ -12,13 +12,17 @@ hasher = CryptContext(schemes=["bcrypt"])
 class Auth():
     jwt = PyJWT()
 
-    def encode_password(self, password):
+    def encode_password(self, password: str) -> Union[str, Any]:
         return hasher.hash(password)
 
-    def verify_password(self, password, encoded_password):
+    def verify_password(
+        self,
+        password: str,
+        encoded_password: str
+    ) -> Union[bool, Any]:
         return hasher.verify(password, encoded_password)
 
-    def encode_token(self, user_name):
+    def encode_token(self, user_name: str) -> Union[str, Any]:
         args = {
             "scope": "access_token",
             "sub": user_name,
@@ -27,7 +31,7 @@ class Auth():
         }
         return self.jwt.encode(payload=args, key=string, algorithm="HS256")
 
-    def decode_token(self, token):
+    def decode_token(self, token: str) -> Union[Any, Dict[str, Any]]:
         try:
             args = self.jwt.decode(jwt=token, key=string, algorithms=['HS256'])
             if args['scope'] == "access_token":
@@ -41,7 +45,7 @@ class Auth():
             msg = {"message": "Invalid token", "details": str(ex)}
             return msg
 
-    def encode_refresh_token(self, user_name):
+    def encode_refresh_token(self, user_name: str) -> str:
         args = {
             "scope": "refresh_token",
             "sub": user_name,
@@ -50,7 +54,10 @@ class Auth():
         }
         return self.jwt.encode(payload=args, key=string, algorithm="HS256")
 
-    def refresh_access_token(self, refresh_token):
+    def refresh_access_token(
+        self,
+        refresh_token: str
+    ) -> Union[str, Dict[str, Any]]:
         try:
             args = self.jwt.decode(jwt=refresh_token,
                                    key=string, algorithms=['HS256'])
