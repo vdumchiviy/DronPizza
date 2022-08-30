@@ -1,4 +1,4 @@
-from auth.auth import Auth
+from authorization.auth import Auth
 from utils import file_utils
 from typing import Any, Dict, List, Optional, Union
 from fastapi import APIRouter, Request, Security
@@ -16,14 +16,15 @@ auth_handler = Auth()
 @router.get(path="/pizzabases", tags=["PizzaBase"])
 def get_pizzabases(
 ) -> List[PizzaBase]:
-    return [PizzaBase]
+    pizzabase: PizzaBase = PizzaBase(pk=0, name='pizzabase')
+    return [pizzabase]
 
 
 @router.post(path="/pizzabases", tags=["PizzaBase"], response_model=PizzaBase)
 def create_pizzabases(
 ) -> PizzaBase:
-    pizzabase = PizzaBase()
-    return {"message": pizzabase.dict()}
+    pizzabase: PizzaBase = PizzaBase(pk=0, name='pizzabase')
+    return pizzabase
 
 
 @router.get(
@@ -32,7 +33,7 @@ def create_pizzabases(
     response_model=Union[PizzaTask, Dict[str, Any]])
 def get_new_task(
     credentials: HTTPAuthorizationCredentials = Security(security)
-) -> Union[PizzaTask, Dict[str, Any]]:
+) -> Union[Optional[PizzaTask], Dict[str, Any]]:
     token = credentials.credentials
     auth_result = auth_handler.decode_token(token)
     if type(auth_result) is dict:
@@ -40,9 +41,9 @@ def get_new_task(
     if auth_result is False:
         return {"code": 404, "message": "Invalid token"}
 
-    pizza_tasks: Optional[PizzaTask] = file_utils.get_new_task_from_csv()
+    pizza_tasks = file_utils.get_new_task_from_csv()
     try:
-        pizza_task = next(pizza_tasks)
+        pizza_task: Optional[PizzaTask] = next(pizza_tasks)
     except StopIteration:
         return {"code": 404, "message": "There is no more tasks"}
     return pizza_task
