@@ -1,4 +1,5 @@
 import csv
+from typing import Iterator
 from schemas.pizzabase import PizzaTask
 
 
@@ -7,9 +8,11 @@ csv_tasks = open(filename_tasks, "r")
 reader_tasks = csv.DictReader(csv_tasks)
 
 
-def get_new_task_from_csv(filename_tasks=filename_tasks):
+def get_new_task_from_csv(
+    filename_tasks: str = filename_tasks
+) -> Iterator[PizzaTask]:
     for row in reader_tasks:
-        pizza_task = PizzaTask.parse_obj(row)
+        pizza_task: PizzaTask = PizzaTask.parse_obj(row)
         yield pizza_task
 
 
