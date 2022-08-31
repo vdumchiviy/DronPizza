@@ -1,5 +1,7 @@
 # DronPizza
 ## _Automated pizzeria with dron delivery_
+
+[![Build status](https://github.com/vdumchiviy/dronpizza/actions/workflows/checks.yml/badge.svg?branch=develop)](https://github.com/vdumchiviy/dronpizza/actions/workflows/checks.yml)
 ---
 
 
