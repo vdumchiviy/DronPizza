@@ -1,4 +1,13 @@
+#----------------------------------
+# 
+# Github Action for DronPizza
+# 
+#----------------------------------
 name: CodeChecks
+env:
+  APP_NAME: "DronPizza"
+  PKG_NAME: "dronpizza-ver-${{ github.sha }}"
+
 
 on:
   push:
@@ -9,13 +18,20 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.8.10, 3.10]
     steps:
+      - name: Print Info
+        run : |
+          echo "Application name: ${{ env.APP_NAME }}"
+          echo "Package name: ${{ env.PKG_NAME }}"
       - name: Checkout repository
         uses: actions/checkout@v3
-      - name: Install python
+      - name: Install python ${{ matrix.python-version }}
         uses: actions/setup-python@v4
         with:
-          python-version: 3.8.10
+          python-version: ${{ matrix.python-version }}
       - name: Install deps
         run: |
           python -m pip install --upgrade pip
