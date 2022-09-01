@@ -2,6 +2,9 @@
 ## _Automated pizzeria with dron delivery_
 
 [![Build status](https://github.com/vdumchiviy/dronpizza/actions/workflows/checks.yml/badge.svg?branch=develop)](https://github.com/vdumchiviy/dronpizza/actions/workflows/checks.yml)
+
+[![Build status](https://github.com/vdumchiviy/dronpizza/actions/workflows/cicd2aws.yml/badge.svg?branch=develop)](https://github.com/vdumchiviy/dronpizza/actions/workflows/cicd2aws.yml)
+
 ---
 
 

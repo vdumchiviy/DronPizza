@@ -1,0 +1,89 @@
+#----------------------------------
+# 
+# Github Action for DronPizza
+#   (CI/CD pipeline to AWS)
+# 
+#----------------------------------
+name: CI-CD-2-AWSElasticBeansTalk-pipeline
+env:
+  PYTHON_APP_NAME       : "DronPizza"
+  PYTHON_PKG_NAME       : "dronpizza-app-ver-${{ github.sha }}"
+  AWSEBT_APP_NAME       : "DronPizza"
+  AWSEBT_REGION_NAME    : "us-east-1"
+  AWSEBT_BUCKET_S3_NAME : "dronpizza-fastapi-application-packages"
+  AWSEBT_EVIRONMENT_NAME: "Dronpizza-env"
+  AWSEBT_DEPLOY_ZIP_NAME: "dronpizza-app-ver-${{ github.sha }}.zip"
+# AWS_GITHUB_ACTIONS_USER_ACCESS_KEY
+# AWS_GITHUB_ACTIONS_USER_SECRET_KEY
+
+on:
+  push:
+    brances:
+      - develop
+
+jobs:
+  ci_part:
+    runs-on: ubuntu-latest
+    needs  : [build]
+
+    steps:
+      
+      - name: Print Info
+        run : |
+          echo "Application name: ${{ env.PYTHON_APP_NAME }}"
+          echo "Package name: ${{ env.PYTHON_PKG_NAME }}"
+      
+      - name: Checkout repository
+        run : actions/checkout@v4
+      
+      - name: Pack develop 
+        run : zip -r ${{ env.AWSEBT_DEPLOY_ZIP_NAME }} ./ -x *.git*
+      
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id    : ${{ secrets.AWS_GITHUB_ACTIONS_USER_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_GITHUB_ACTIONS_USER_SECRET_KEY }}
+          aws-region           : ${{ env.AWSEBT_REGION_NAME }}
+      
+      - name: Deploy package to AWS Bucket
+        run : aws s3 cp ${{ env.AWSEBT_DEPLOY_ZIP_NAME }} s3://${{ env.AWSEBT_BUCKET_S3_NAME }}/
+
+      - name: CI pipeline status
+        run : echo "Phase CI - Package ${{ env.PYTHON_PKG_NAME }} has been successfuly deployed"
+
+jobs:
+  cd_part:
+    runs-on: ubuntu-latest
+    needs  : [ci-part]
+
+    steps:
+
+      - name: Print Info
+        run : |
+          echo "Application name: ${{ env.PYTHON_APP_NAME }}"
+          echo "Package name: ${{ env.PYTHON_PKG_NAME }}"
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id    : ${{ secrets.AWS_GITHUB_ACTIONS_USER_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_GITHUB_ACTIONS_USER_SECRET_KEY }}
+          aws-region           : ${{ env.AWSEBT_REGION_NAME }}
+
+      - name: Re-create new AWSElasticBeanstalk application version "${{ env.PYTHON_PKG_NAME }}"
+        run : |
+          aws elasticebeanstalk create-application-version \
+          --application-name ${{ env.AWSEBT_APP_NAME }} \
+          --source-bandle S3Bucket="${{ env.AWSEBT_BUCKET_S3_NAME }}", S3Key="${{ env.AWS" \
+          --version-label "${{ env.PYTHON_PKG_NAME }}" \
+          --description "${{ env.PYTHON_PKG_NAME }}" 
+
+      - name: Re-Deploy new AWSElasticBeanstalk application version "${{ env.PYTHON_PKG_NAME }}"
+        run : |
+          aws elasticebeanstalk update-environment \
+          --environment-name ${{ env.AWSEBT_EVIRONMENT_NAME }} \
+          --version-label "${{ env.PYTHON_PKG_NAME }}"
+
+      - name: CD pipeline status
+        run : echo "Phase CD - Package ${{ env.PYTHON_PKG_NAME }} has been successfuly deployed"
