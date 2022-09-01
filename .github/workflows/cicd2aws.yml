@@ -77,7 +77,7 @@ jobs:
           --description "${{ env.PYTHON_PKG_NAME }}" 
       - name: Re-Deploy new AWSElasticBeanstalk application version "${{ env.PYTHON_PKG_NAME }}"
         run : |
-          aws elasticebanstalk update-environment \
+          aws elasticbeanstalk update-environment \
           --environment-name ${{ env.AWSEBT_EVIRONMENT_NAME }} \
           --version-label "${{ env.PYTHON_PKG_NAME }}"
       - name: CD pipeline status
