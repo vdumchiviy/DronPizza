@@ -72,7 +72,7 @@ jobs:
         run : |
           aws elasticbeanstalk create-application-version \
           --application-name ${{ env.AWSEBT_APP_NAME }} \
-          --source-bandle S3Bucket="${{ env.AWSEBT_BUCKET_S3_NAME }}" S3Key="${{ env.AWSEBT_DEPLOY_ZIP_NAME }}" \
+          --source-bandle S3Bucket="${{ env.AWSEBT_BUCKET_S3_NAME }}",S3Key="${{ env.AWSEBT_DEPLOY_ZIP_NAME }}" \
           --version-label "${{ env.PYTHON_PKG_NAME }}" \
           --description "${{ env.PYTHON_PKG_NAME }}" 
       - name: Re-Deploy new AWSElasticBeanstalk application version "${{ env.PYTHON_PKG_NAME }}"
