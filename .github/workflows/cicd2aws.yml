@@ -33,7 +33,7 @@ jobs:
           echo "Package name: ${{ env.PYTHON_PKG_NAME }}"
       
       - name: Checkout repository
-        run : actions/checkout@v3
+        run : actions/checkout@v1
       
       - name: Pack develop 
         run : zip -r ${{ env.AWSEBT_DEPLOY_ZIP_NAME }} ./ -x *.git*
