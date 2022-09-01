@@ -24,7 +24,6 @@ on:
 jobs:
   ci_part:
     runs-on: ubuntu-latest
-    needs  : [build]
 
     steps:
       
@@ -54,7 +53,7 @@ jobs:
 
   cd_part:
     runs-on: ubuntu-latest
-    needs  : [ci-part]
+    needs  : [ci_part]
 
     steps:
 
