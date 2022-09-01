@@ -14,4 +14,5 @@ dron_data: Dict[str, Any]
 
 task: PizzaTask
 
-auth_base: List[UserDron]
+auth_base: List[UserDron] = [
+    UserDron(pk=-1, name='Test', hashed_password="qqq")]

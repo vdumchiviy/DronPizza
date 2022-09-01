@@ -2,7 +2,8 @@ from typing import Any, Dict, List, Union
 from fastapi import APIRouter, Body, Security
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from schemas.auth import UserDron
-from utils import settings
+import utils.settings
+
 from authorization.auth import Auth
 
 auth_handler = Auth()
@@ -16,14 +17,20 @@ def create_userdrons(
 ) -> Union[UserDron, Dict[str, Any]]:
     login = data.get("login")
     password = data.get("password")
-    if login in [x.name for x in settings.auth_base]:  # noqa
-        return {"code": 400, "message": "Cannot create dublicate dron user"}
+    try:
+        check_length = len(utils.settings.auth_base)
+        if check_length > 0 and login in [x.name for x in utils.settings.auth_base]:  # noqa
+            return {
+                "code": 400,
+                "message": "Cannot create dublicate dron user"}
+    except Exception:
+        pass
+
     try:
         hashed_password = auth_handler.encode_password(password)
         new_dron: UserDron = UserDron(
             pk=0, name=login, hashed_password=hashed_password)
-        if settings.auth_base is not None:
-            settings.auth_base.append(new_dron)
+        utils.settings.auth_base.append(new_dron)
         return new_dron
     except Exception as ex:
         return {"code": 400, "message": str(ex)}
@@ -36,7 +43,7 @@ def login_userdrons(
     login = data.get("login")
     password = data.get("password")
     users: List[UserDron] = list(
-        filter(lambda x: x.name == login, settings.auth_base))
+        filter(lambda x: x.name == login, utils.settings.auth_base))
     if len(users) == 0:
         return {"code": 400,
                 "message": f"Cannot find dron user with name={login}"}
