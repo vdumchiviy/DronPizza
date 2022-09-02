@@ -23,3 +23,7 @@ tests/api/__pycache__/__init__.cpython-38.pyc
 tests/api/__pycache__/test_api_auth.cpython-38-pytest-7.1.2.pyc
 authorization/__pycache__/__init__.cpython-38.pyc
 authorization/__pycache__/auth.cpython-38.pyc
+.env.local
+api/__pycache__/__init__.cpython-38.pyc
+schemas/__pycache__/__init__.cpython-38.pyc
+utils/__pycache__/__init__.cpython-38.pyc
